@@ -4,6 +4,8 @@ A console application that manages products (list of dictionaries),
 stock updates, customer sales and a final store report.
 """
 
+import math
+
 LOW_STOCK_LIMIT = 5
 
 # Starter data so the system can be demonstrated immediately.
@@ -41,6 +43,10 @@ def get_price(prompt):
             value = float(raw)
         except ValueError:
             print("  Invalid input. Please enter a number (e.g. 250 or 99.5).")
+            continue
+        # float() accepts "inf", "-inf", "nan" and "1e999"; none are real prices.
+        if not math.isfinite(value):
+            print("  Invalid price. Infinite or non-numeric values are not allowed.")
             continue
         if value > 0:
             return value
@@ -109,7 +115,7 @@ def view_products():
 
 
 def search_product():
-    # Search by ID (digits) or by name (case-insensitive, partial match allowed).
+    # Search by ID (decimal digits) or by name (case-insensitive, partial match allowed).
     print("\n--- Search Product ---")
     query = input("Enter product name or ID: ").strip()
     if not query:
@@ -117,7 +123,7 @@ def search_product():
         return
     found = []
     for product in products:
-        if query.isdigit() and product["id"] == int(query):
+        if query.isdecimal() and product["id"] == int(query):
             found.append(product)
         elif query.lower() in product["name"].lower():
             found.append(product)
@@ -275,7 +281,9 @@ def main():
         elif choice == "7":
             generate_report()
         elif choice == "8":
-            print("\nThank you for using the Smart Grocery Store System. Goodbye!")
+            print("\nNote: products and sales are kept in memory only and are")
+            print("erased when the program closes. Nothing is saved to disk.")
+            print("Thank you for using the Smart Grocery Store System. Goodbye!")
             break
         else:
             print("  Invalid choice. Please enter a number from 1 to 8.")
